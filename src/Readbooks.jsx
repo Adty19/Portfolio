@@ -1,0 +1,479 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { FaGithub, FaLinkedin, FaTwitter, FaEnvelope } from 'react-icons/fa';
+
+const Portfolio = () => {
+    const [activeSection, setActiveSection] = useState('home');
+    const [scrollY, setScrollY] = useState(0);
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+    const [splashes, setSplashes] = useState([]);
+    const splashIdRef = useRef(0);
+    const particlesRef = useRef([]);
+    const canvasRef = useRef(null);
+    const requestRef = useRef(null);
+    const currentYear = new Date().getFullYear();
+
+    // Handle cursor movement and splash effect
+    useEffect(() => {
+        const handleMouseMove = (e) => {
+            setCursorPosition({ x: e.clientX, y: e.clientY });
+            
+            // Add splash effect with a controlled rate (every 100ms)
+            if (Math.random() > 0.85) { // Randomly create splashes for a more natural effect
+                const newSplash = {
+                    id: splashIdRef.current++,
+                    x: e.clientX,
+                    y: e.clientY,
+                    size: 0,
+                    opacity: 0.7,
+                    color: `hsl(${Math.random() * 60 + 190}, 100%, 50%)`
+                };
+                
+                setSplashes(prev => [...prev, newSplash]);
+                
+                // Remove splash after animation completes
+                setTimeout(() => {
+                    setSplashes(prev => prev.filter(splash => splash.id !== newSplash.id));
+                }, 1000);
+            }
+        };
+
+        window.addEventListener('mousemove', handleMouseMove);
+        return () => window.removeEventListener('mousemove', handleMouseMove);
+    }, []);
+
+    // Handle splash animation
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setSplashes(prev => 
+                prev.map(splash => ({
+                ...splash,
+                size: splash.size + 10,
+                opacity: splash.opacity - 0.05
+                }))
+            );
+        }, 50);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    // Initialize and animate background particles
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+
+        const ctx = canvas.getContext('2d');
+        const particleCount = 80;
+        
+        // Set canvas size
+        const resizeCanvas = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        };
+    
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        
+        // Create particles
+        if (particlesRef.current.length === 0) {
+            for (let i = 0; i < particleCount; i++) {
+                particlesRef.current.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 3 + 1,
+                speedX: Math.random() * 1 - 0.5,
+                speedY: Math.random() * 1 - 0.5,
+                color: `rgba(59, 130, 246, ${Math.random() * 0.5 + 0.2})`,
+                pulse: 0,
+                pulseSpeed: Math.random() * 0.02 + 0.01
+                });
+            }
+        }
+    
+        // Animation function
+        const animate = () => {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            particlesRef.current.forEach(particle => {
+                // Update position
+                particle.x += particle.speedX;
+                particle.y += particle.speedY;
+                
+                // Handle boundaries
+                if (particle.x < 0 || particle.x > canvas.width) particle.speedX *= -1;
+                if (particle.y < 0 || particle.y > canvas.height) particle.speedY *= -1;
+                
+                // Update pulse
+                particle.pulse += particle.pulseSpeed;
+                if (particle.pulse > 1 || particle.pulse < 0) particle.pulseSpeed *= -1;
+                
+                // Draw particle
+                ctx.beginPath();
+                ctx.arc(
+                particle.x, 
+                particle.y, 
+                particle.radius * (1 + particle.pulse * 0.5), 
+                0, 
+                Math.PI * 2
+                );
+                ctx.fillStyle = particle.color;
+                ctx.fill();
+                
+                // Draw connecting lines for particles that are close to each other
+                particlesRef.current.forEach(otherParticle => {
+                    const distance = Math.sqrt(
+                        Math.pow(particle.x - otherParticle.x, 2) + 
+                        Math.pow(particle.y - otherParticle.y, 2)
+                    );
+                
+                    if (distance < 100) {
+                        ctx.beginPath();
+                        ctx.moveTo(particle.x, particle.y);
+                        ctx.lineTo(otherParticle.x, otherParticle.y);
+                        ctx.strokeStyle = `rgba(59, 130, 246, ${0.2 * (1 - distance / 100)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                });
+            });
+        
+        requestRef.current = requestAnimationFrame(animate);
+        };
+    
+        animate();
+        
+        return () => {
+            cancelAnimationFrame(requestRef.current);
+            window.removeEventListener('resize', resizeCanvas);
+        };
+    }, []);
+
+    // Handle scroll events
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrollY(window.scrollY);
+            
+            // Update active section based on scroll position
+            const sections = document.querySelectorAll('section');
+            const scrollPosition = window.scrollY + 300;
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.offsetHeight;
+                
+                if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                    setActiveSection(section.id);
+                }
+            });
+        };
+        
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+  
+    
+
+    return (
+        <div className="bg-black text-gray-200 min-h-screen font-mono">
+            {/* Canvas for particle animation */}
+            <canvas 
+            ref={canvasRef} 
+            className="fixed inset-0 z-0 w-full h-full" 
+            />
+            
+            {/* Cursor splash effects */}
+            <div className="fixed inset-0 z-10 pointer-events-none">
+            {splashes.map(splash => (
+                <div 
+                key={splash.id}
+                className="absolute rounded-full"
+                style={{
+                    left: splash.x + 'px',
+                    top: splash.y + 'px',
+                    width: splash.size + 'px',
+                    height: splash.size + 'px',
+                    backgroundColor: splash.color,
+                    opacity: splash.opacity,
+                    transform: 'translate(-50%, -50%)',
+                    transition: 'width 0.8s ease-out, height 0.8s ease-out, opacity 0.8s ease-out'
+                }}
+                />
+            ))}
+            <div 
+                className="absolute w-6 h-6 rounded-full border-2 border-blue-400 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none mix-blend-difference"
+                style={{
+                left: cursorPosition.x + 'px',
+                top: cursorPosition.y + 'px',
+                boxShadow: '0 0 10px rgba(59, 130, 246, 0.8)'
+                }}
+            />
+            </div>
+
+            {/* Navigation */}
+            <nav className="fixed top-0 w-full bg-gray-900 bg-opacity-80 backdrop-filter backdrop-blur-sm z-50 shadow-lg">
+                <div className="max-w-6xl mx-auto px-4">
+                    <div className="flex justify-between items-center py-4">
+                        <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
+                            <span className="text-blue-500">&lt;</span>
+                                APortfolio
+                            <span className="text-blue-500">/&gt;</span>
+                        </div>
+                        
+                        {/* Desktop Navigation */}
+                        <div className="hidden md:flex space-x-8 text-sm">
+                            <a href="#home" className={`transition-all duration-300 hover:text-blue-400 ${activeSection === 'home' ? 'text-blue-400 border-b-2 border-blue-400' : ''}`}>
+                                Home
+                            </a>
+                            <a href="#about" className={`transition-all duration-300 hover:text-blue-400 ${activeSection === 'about' ? 'text-blue-400 border-b-2 border-blue-400' : ''}`}>
+                                About
+                            </a>
+                            <a href="#education" className={`transition-all duration-300 hover:text-blue-400 ${activeSection === 'education' ? 'text-blue-400 border-b-2 border-blue-400' : ''}`}>
+                                Education
+                            </a>
+                            <a href="#project" className={`transition-all duration-300 hover:text-blue-400 ${activeSection === 'project' ? 'text-blue-400 border-b-2 border-blue-400' : ''}`}>
+                                Project
+                            </a>
+                            <a href="#experience" className={`transition-all duration-300 hover:text-blue-400 ${activeSection === 'experience' ? 'text-blue-400 border-b-2 border-blue-400' : ''}`}>
+                                Experience
+                            </a>
+                            <a href="#licenses" className={`transition-all duration-300 hover:text-blue-400 ${activeSection === 'licenses' ? 'text-blue-400 border-b-2 border-blue-400' : ''}`}>
+                                Certification & Awards
+                            </a>
+                        </div>
+                        
+                        {/* Mobile Menu Button */}
+                        <div className="md:hidden">
+                            <button 
+                                onClick={() => setMenuOpen(!menuOpen)}
+                                className="text-gray-200 focus:outline-none">
+                                <svg 
+                                    className="w-6 h-6" 
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    viewBox="0 0 24 24">
+                                    {menuOpen ? (
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    ) : (
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                                    )}
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                {/* Mobile Menu */}
+                {menuOpen && (
+                    <div className="md:hidden bg-gray-800 bg-opacity-95 backdrop-filter backdrop-blur-sm">
+                        <a href="#home" onClick={() => setMenuOpen(false)} className={`block py-3 px-4 transition-colors duration-300 ${activeSection === 'home' ? 'text-blue-400 bg-gray-700' : 'hover:bg-gray-700'}`}>
+                            Home
+                        </a>
+                        <a href="#about" onClick={() => setMenuOpen(false)} className={`block py-3 px-4 transition-colors duration-300 ${activeSection === 'about' ? 'text-blue-400 bg-gray-700' : 'hover:bg-gray-700'}`}>
+                            About
+                        </a>
+                        <a href="#education" onClick={() => setMenuOpen(false)} className={`block py-3 px-4 transition-colors duration-300 ${activeSection === 'education' ? 'text-blue-400 bg-gray-700' : 'hover:bg-gray-700'}`}>
+                            Education
+                        </a>
+                        <a href="#project" onClick={() => setMenuOpen(false)} className={`block py-3 px-4 transition-colors duration-300 ${activeSection === 'project' ? 'text-blue-400 bg-gray-700' : 'hover:bg-gray-700'}`}>
+                            Project
+                        </a>
+                        <a href="#experience" onClick={() => setMenuOpen(false)} className={`block py-3 px-4 transition-colors duration-300 ${activeSection === 'experience' ? 'text-blue-400 bg-gray-700' : 'hover:bg-gray-700'}`}>
+                            Experience
+                        </a>
+                        <a href="#licenses" onClick={() => setMenuOpen(false)} className={`block py-3 px-4 transition-colors duration-300 ${activeSection === 'licenses' ? 'text-blue-400 bg-gray-700' : 'hover:bg-gray-700'}`}>
+                            Certification & Awards
+                        </a>
+                    </div>
+                )}
+            </nav>
+
+            {/* Main Content */}
+            <div className="relative z-10 overflow-hidden">
+                {/* Hero Section */}
+                <section id="home" className="min-h-screen flex flex-col justify-center items-center text-center px-4 overflow-hidden" style={{ transform: `translateY(${scrollY * 0.3}px)`, overflow: 'hidden', opacity: 1 - scrollY / 700}} >
+                    <div className="max-w-4xl mx-auto">
+                        <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500">
+                            Aditya Pranoto
+                        </h1>
+                        <div className="text-xl md:text-3xl mb-6 text-gray-300">
+                            <span className="inline-block overflow-hidden border-r-2 border-blue-400 whitespace-nowrap animate-typing">
+                                Fullstack Developer
+                            </span>
+                        </div>
+                        <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-10">
+                            Committed to empowering ideas and translating them into impactful digital realities by crafting user-centric designs, building robust systems, and delivering seamless user experiences.
+                        </p>
+                        <div className="flex justify-center space-x-4">
+                            <a href="#about" className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                                Explore
+                            </a>
+                            <a href="#contact" className="px-8 py-3 bg-transparent border border-blue-400 text-blue-400 hover:text-white hover:bg-blue-500 rounded-full transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                                Contact Me
+                            </a>
+                        </div>
+                    </div>
+                </section>
+
+                {/* About Section */}
+                <section id="about" className="min-h-screen py-20 px-4 overflow-hidden">
+                    <div className="max-w-6xl mx-auto">
+                        <div className="mb-16 text-center">
+                            <h2 className="text-4xl font-bold mb-2 inline-block bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">About Me</h2>
+                            <div className="w-20 h-1 bg-blue-500 mx-auto"></div>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                            <div className="transform transition-all duration-700 overflow-hidden" 
+                                style={{ 
+                                    opacity: scrollY > 400 ? 1 : 0, 
+                                    transform: scrollY > 400 ? 'translateX(0)' : 'translateX(-100px)',
+                                    maxWidth: '100%',
+                                    overflow: 'hidden'
+                                }}>
+                                <div className="relative w-full h-80 md:h-96 overflow-hidden rounded-lg shadow-xl">
+                                    <div className="absolute inset-0 bg-gradient-to-tr from-blue-500 to-purple-600 opacity-80"></div>
+                                    <img src="https://via.placeholder.com/400x320" alt="" className="w-full h-full object-cover mix-blend-overlay"/>
+                                    <div className="absolute inset-0 border-2 border-white border-opacity-20 rounded-lg"></div>
+                                </div>
+                            </div>
+                        
+                            <div className="transform transition-all duration-700 overflow-hidden" 
+                                style={{ 
+                                    opacity: scrollY > 400 ? 1 : 0, 
+                                    transform: scrollY > 400 ? 'translateX(0)' : 'translateX(100px)',
+                                    maxWidth: '100%',
+                                    overflow: 'hidden'
+                                }}>
+                                <h3 className="text-2xl font-bold mb-4 text-blue-400">Hello, Aditya Pranoto</h3>
+                                <p className="text-gray-300 mb-6 text-justify leading-relaxed">
+                                    A freelancer who is passionate about the world of technology. I am an Informatics graduate from University Technology of Yogyakarta (UTY), with experience in various fields of technology development. I have expertise in backend, frontend, and full-stack
+                                    web development, and always strive to create innovative solutions utilizing the latest technology.
+                                </p>
+                                <p className="text-gray-300 mb-6 text-justify leading-relaxed">
+                                    Additionally, I also have a deep interest in cybersecurity, which allows me to create systems that are not only effective, but also secure. With a strong educational background and a passion for continuous learning, I am ready to face new challenges and work together with clients to realize successful projects!
+                                </p>
+                                
+                                <div className="grid grid-cols-2 gap-4 mb-6">
+                                    <div>
+                                        <h4 className="text-lg font-semibold text-blue-400 mb-2">Skills</h4>
+                                        <ul className="space-y-1 text-gray-400">
+                                            <li>Laravel, Javascript, C#, C React(Basic) & Go(Basic)</li>
+                                            <li>HTML, CSS, Tailwinds, Bootstrap</li>
+                                            <li>Penetration Testing</li>
+                                            <li>UI/UX Design</li>
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <h4 className="text-lg font-semibold text-blue-400 mb-2">Interests</h4>
+                                        <ul className="space-y-1 text-gray-400">
+                                            <li>Web Development</li>
+                                            <li>Cyber Security</li>
+                                            <li>Artificial Intelligence</li>
+                                            <li>Internet of Things</li>
+                                            <li>Augmented Reality</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <div className="flex space-x-4">
+                                    <button className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center text-blue-400 hover:bg-blue-600 hover:text-white transition duration-300">
+                                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M22.675 0H1.325C0.593 0 0 0.593 0 1.325v21.351C0 23.407 0.593 24 1.325 24h11.53v-9.294H9.697v-3.622h3.158V8.413c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463 0.099 2.795 0.143v3.24h-1.918c-1.504 0-1.795 0.715-1.795 1.763v2.313h3.587l-0.467 3.622h-3.12V24h6.116C23.407 24 24 23.407 24 22.675V1.325C24 0.593 23.407 0 22.675 0z"></path>
+                                        </svg>
+                                    </button>
+                                    <button className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center text-blue-400 hover:bg-blue-600 hover:text-white transition duration-300">
+                                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M12 0C5.373 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.6.113.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"></path>
+                                        </svg>
+                                    </button>
+                                    <button className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center text-blue-400 hover:bg-blue-600 hover:text-white transition duration-300">
+                                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                
+                
+                
+            </div>
+
+            <footer className="bg-gray-900 text-gray-300 border-t border-gray-800">
+                <div className="container mx-auto py-10 px-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                        {/* Logo dan deskripsi */}
+                        <div className="space-y-4">
+                            <div className="font-bold text-2xl bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">APortofolio</div>
+                            <p className="text-gray-400 text-justify max-w-md">A digital problem solver who creates end-to-end technology solutions through the development of digital systems, interfaces, and infrastructure that integrate efficiently and functionally.</p>
+                            <div className="flex space-x-4 mt-4">
+                                <a href="#" className="text-gray-400 hover:text-blue-500 transition-colors duration-300">
+                                    <FaGithub className="text-xl" />
+                                </a>
+                                <a href="#" className="text-gray-400 hover:text-blue-500 transition-colors duration-300">
+                                    <FaLinkedin className="text-xl" />
+                                </a>
+                                <a href="#" className="text-gray-400 hover:text-blue-500 transition-colors duration-300">
+                                    <FaTwitter className="text-xl" />
+                                </a>
+                                <a href="#" className="text-gray-400 hover:text-blue-500 transition-colors duration-300">
+                                    <FaEnvelope className="text-xl" />
+                                </a>
+                            </div>
+                        </div>
+                
+                        {/* Links */}
+                        <div className="space-y-4">
+                            <h3 className="text-xl font-semibold mb-4 relative">
+                                <span className="relative z-10">Navigation</span>
+                            </h3>
+                            <ul className="space-y-2">
+                                <li><a href="#" className="hover:text-blue-400 transition-colors duration-300">Home</a></li>
+                                <li><a href="#" className="hover:text-blue-400 transition-colors duration-300">About</a></li>
+                                <li><a href="#" className="hover:text-blue-400 transition-colors duration-300">Education</a></li>
+                                <li><a href="#" className="hover:text-blue-400 transition-colors duration-300">Project</a></li>
+                                <li><a href="#" className="hover:text-blue-400 transition-colors duration-300">Experience</a></li>
+                                <li><a href="#" className="hover:text-blue-400 transition-colors duration-300">Certification & Awards</a></li>
+                            </ul>
+                        </div>
+                
+                        {/* Contact */}
+                        <div className="space-y-4">
+                            <h3 className="text-xl font-semibold mb-4 relative">
+                                <span className="relative z-10">Contact Me</span>
+                            </h3>
+                            <p className="text-gray-400 text-justify">Interested in working together? I am open to freelance projects, team collaborations, or new challenges in the programming world.</p>
+                            <a href="mailto:email@example.com" className="inline-block px-6 py-3 mt-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-medium rounded-md hover:opacity-90 transition-opacity duration-300">Send Email</a>
+                        </div>
+                    </div>
+                
+                    {/* Bottom bar */}
+                    <div className="border-t border-gray-800 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center">
+                        <p className="text-gray-500 text-sm">&copy; {currentYear} APortofolio. All rights reserved.</p>
+                        <div className="mt-4 md:mt-0">
+                            <ul className="flex space-x-6 text-sm text-gray-500">
+                                <li><a href="#" className="hover:text-gray-300 transition-colors duration-300">Privacy</a></li>
+                                <li><a href="#" className="hover:text-gray-300 transition-colors duration-300">Terms</a></li>
+                                <li><a href="#" className="hover:text-gray-300 transition-colors duration-300">Cookie Policy</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+
+            {/* Scroll to top button */}
+            <button 
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                className={`fixed bottom-8 right-8 w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg transition-all duration-300 ${scrollY > 300 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                </svg>
+            </button>
+        </div>
+    );
+};
+
+export default Portfolio;
