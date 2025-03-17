@@ -377,7 +377,7 @@ const Portfolio = () => {
                         </h1>
                         <div className="text-xl md:text-3xl mb-6 text-gray-300">
                             <span className="inline-block overflow-hidden border-r-2 border-blue-400 whitespace-nowrap animate-typing">
-                                Fullstack Web Developer | Software Engineer
+                                Fullstack Developer | Software Engineer
                             </span>
                         </div>
                         <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-10">
@@ -832,11 +832,11 @@ const Portfolio = () => {
             
             @keyframes typing {
                 from { width: 0 }
-                to { width: 50% }
+                to { width: 100% }
             }
             
             .animate-typing {
-                animation: typing 3.5s steps(25, end);
+                animation: typing 3.5s steps(50, end);
             }
         `}</style>
     </div>
