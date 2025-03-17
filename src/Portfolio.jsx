@@ -685,8 +685,7 @@ const Portfolio = () => {
                                         />
                                         <label 
                                             htmlFor="email" 
-                                            className="absolute text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                                        >
+                                            className="absolute text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-400 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">
                                             Email Address
                                         </label>
                                     </div>
@@ -746,7 +745,7 @@ const Portfolio = () => {
                     
                     .bg-grid-pattern {
                         background-image: linear-gradient(rgba(66, 153, 225, 0.1) 1px, transparent 1px),
-                                        linear-gradient(90deg, rgba(66, 153, 225, 0.1) 1px, transparent 1px);
+                        linear-gradient(90deg, rgba(66, 153, 225, 0.1) 1px, transparent 1px);
                         background-size: 30px 30px;
                     }
                 `}</style>
@@ -758,7 +757,7 @@ const Portfolio = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
                     {/* Logo dan deskripsi */}
                     <div className="space-y-4">
-                        <div className="font-bold text-2xl bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">APortofolio</div>
+                        <div className="font-bold text-2xl bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">APortfolio</div>
                         <p className="text-gray-400 text-justify max-w-md">A digital problem solver who creates end-to-end technology solutions through the development of digital systems, interfaces, and infrastructure that integrate efficiently and functionally.</p>
                         <div className="flex space-x-4 mt-4">
                             <a href="#" className="relative z-10 text-gray-400 hover:text-blue-500 transition-colors duration-300">
@@ -837,7 +836,7 @@ const Portfolio = () => {
             }
             
             .animate-typing {
-                animation: typing 3.5s steps(10, end);
+                animation: typing 3.5s steps(25, end);
             }
         `}</style>
     </div>

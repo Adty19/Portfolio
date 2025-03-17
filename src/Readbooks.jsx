@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaGithub, FaLinkedin, FaTwitter, FaEnvelope } from 'react-icons/fa';
 
-const Portfolio = () => {
+const ReadBooks = () => {
     const [activeSection, setActiveSection] = useState('home');
     const [scrollY, setScrollY] = useState(0);
     const [menuOpen, setMenuOpen] = useState(false);
@@ -396,10 +396,6 @@ const Portfolio = () => {
                         </div>
                     </div>
                 </section>
-                
-                
-                
-                
             </div>
 
             <footer className="bg-gray-900 text-gray-300 border-t border-gray-800">
@@ -476,4 +472,4 @@ const Portfolio = () => {
     );
 };
 
-export default Portfolio;
+export default ReadBooks;
