@@ -375,7 +375,7 @@ const Portfolio = () => {
                         <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500">
                             Aditya Pranoto
                         </h1>
-                        <div className="text-xl md:text-3xl mb-6 text-gray-300">
+                        <div className="text-base md:text-3xl mb-6 text-gray-300">
                             <span className="inline-block overflow-hidden border-r-2 border-blue-400 whitespace-nowrap animate-typing">
                                 Fullstack Developer | Software Engineer
                             </span>
