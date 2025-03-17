@@ -377,7 +377,7 @@ const Portfolio = () => {
                         </h1>
                         <div className="text-xl md:text-3xl mb-6 text-gray-300">
                             <span className="inline-block overflow-hidden border-r-2 border-blue-400 whitespace-nowrap animate-typing">
-                                Fullstack Developer
+                                Fullstack Web Developer | Software Engineer
                             </span>
                         </div>
                         <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-10">
@@ -802,7 +802,7 @@ const Portfolio = () => {
             
                 {/* Bottom bar */}
                 <div className="border-t border-gray-800 mt-10 pt-6 flex flex-col md:flex-row justify-between items-center">
-                    <p className="text-gray-500 text-sm">&copy; {currentYear} APortofolio. All rights reserved.</p>
+                    <p className="text-gray-500 text-sm">&copy; {currentYear} APortfolio. All rights reserved.</p>
                     <div className="mt-4 md:mt-0">
                         <ul className="flex space-x-6 text-sm text-gray-500">
                             <li><a href="#" className="hover:text-gray-300 transition-colors duration-300">Privacy</a></li>
