@@ -156,28 +156,28 @@ const Portfolio = () => {
             id: 1,
             title: 'Si-Tepat : Sistem Tempat Sampah Cermat Integrated with IoT and Computer Vision',
             description: 'Si-Tepat: Sistem Tempat Sampah Cermat Integrated with IoT and Computer Vision for Waste Classification in Efforts to Realize Zero Waste 2030. Si-Tepat is an innovative project that utilizes IoT and Computer Vision to optimize automatic waste sorting, supporting the Zero Waste 2030 target. With smart sensors and high-resolution cameras, this system classifies waste accurately, reduces human error, and increases recycling efficiency.',
-            image: '/image/Readbooks.png',
+            image: null,
             categories: ['Internet of Things', 'Web Development', 'Machine Learning']
         },
         {
             id: 2,
             title: 'DigestiveSystem | Learning Application about Human Organs for Elementary School Children Using Augmented Reality',
             description: 'DigestiveSystem is an Augmented Reality (AR) based application that helps elementary school children learn about human digestive organs interactively. With an attractive 3D display, users can see organs more closely using the zoom in/out feature and move the model to make it easier to understand.  This application is also equipped with a quiz feature to test childrens understanding.',
-            image: '/image/Readbooks.png',
+            image: null,
             categories: ['Mobile', 'Web Development', 'Augmented Reality']
         },
         {
             id: 3,
             title: 'ReadBooks | Online Book Reading Application',
             description: 'ReadBooks is an online book reading application that provides a modern, safe, and practical reading experience. This application is developed using Laravel 11 with a flexible authentication system, which allows users to log in manually or use a Google account. Then for the security system, it has been integrated using AES-256 and supports payment systems using E-Wallet and M-Banking.',
-            image: '/image/Readbooks.png',
+            image: null,
             categories: ['Web Development']
         },
         {
             id: 4,
             title: 'MiraiPlay | Anime Streaming Application',
             description: 'MiraiPlay is a React.js-based anime streaming app that displays the latest anime list in real-time through external API integration. With a user-friendly interface and clean design, users can explore, view details, and watch anime easily. Fast performance and navigation make MiraiPlay a practical solution for anime fans to enjoy their favorite shows online.',
-            image: '/image/Readbooks.png',
+            image: null,
             categories: ['Web Development']
         }
     ];
