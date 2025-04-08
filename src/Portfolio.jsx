@@ -1,61 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaGithub, FaLinkedin, FaTwitter, FaEnvelope } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import SplashCursor from './components/SplashCursor';
 
 const Portfolio = () => {
     const [activeSection, setActiveSection] = useState('home');
     const [scrollY, setScrollY] = useState(0);
     const [menuOpen, setMenuOpen] = useState(false);
-    const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
-    const [splashes, setSplashes] = useState([]);
-    const splashIdRef = useRef(0);
+    const [cursorPosition] = useState({ x: 0, y: 0 });
+    const [splashes] = useState([]);
     const particlesRef = useRef([]);
     const canvasRef = useRef(null);
     const requestRef = useRef(null);
     const currentYear = new Date().getFullYear();
-
-    // Handle cursor movement and splash effect
-    useEffect(() => {
-        const handleMouseMove = (e) => {
-            setCursorPosition({ x: e.clientX, y: e.clientY });
-            
-            // Add splash effect with a controlled rate (every 100ms)
-            if (Math.random() > 0.85) { // Randomly create splashes for a more natural effect
-                const newSplash = {
-                    id: splashIdRef.current++,
-                    x: e.clientX,
-                    y: e.clientY,
-                    size: 0,
-                    opacity: 0.7,
-                    color: `hsl(${Math.random() * 60 + 190}, 100%, 50%)`
-                };
-                
-                setSplashes(prev => [...prev, newSplash]);
-                
-                // Remove splash after animation completes
-                setTimeout(() => {
-                    setSplashes(prev => prev.filter(splash => splash.id !== newSplash.id));
-                }, 1000);
-            }
-        };
-
-        window.addEventListener('mousemove', handleMouseMove);
-        return () => window.removeEventListener('mousemove', handleMouseMove);
-    }, []);
-
-    // Handle splash animation
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setSplashes(prev => 
-                prev.map(splash => ({
-                ...splash,
-                size: splash.size + 10,
-                opacity: splash.opacity - 0.05
-                }))
-            );
-        }, 50);
-
-        return () => clearInterval(interval);
-    }, []);
 
     // Initialize and animate background particles
     useEffect(() => {
@@ -153,7 +110,6 @@ const Portfolio = () => {
         const handleScroll = () => {
             setScrollY(window.scrollY);
             
-            // Update active section based on scroll position
             const sections = document.querySelectorAll('section');
             const scrollPosition = window.scrollY + 300;
             
@@ -166,9 +122,14 @@ const Portfolio = () => {
                 }
             });
         };
-        
+    
+        // Add scroll event listener
         window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
+        
+        // Clean up
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
     }, []);
   
     // Education data
@@ -189,6 +150,38 @@ const Portfolio = () => {
         }
     ];
 
+    // Project
+    const projects = [
+        {
+            id: 1,
+            title: 'Si-Tepat : Sistem Tempat Sampah Cermat Integrated with IoT and Computer Vision',
+            description: 'Si-Tepat: Sistem Tempat Sampah Cermat Integrated with IoT and Computer Vision for Waste Classification in Efforts to Realize Zero Waste 2030. Si-Tepat is an innovative project that utilizes IoT and Computer Vision to optimize automatic waste sorting, supporting the Zero Waste 2030 target. With smart sensors and high-resolution cameras, this system classifies waste accurately, reduces human error, and increases recycling efficiency.',
+            image: '/image/Readbooks.png',
+            categories: ['Internet of Things', 'Web Development', 'Machine Learning']
+        },
+        {
+            id: 2,
+            title: 'DigestiveSystem | Learning Application about Human Organs for Elementary School Children Using Augmented Reality',
+            description: 'DigestiveSystem is an Augmented Reality (AR) based application that helps elementary school children learn about human digestive organs interactively. With an attractive 3D display, users can see organs more closely using the zoom in/out feature and move the model to make it easier to understand.  This application is also equipped with a quiz feature to test childrens understanding.',
+            image: '/image/Readbooks.png',
+            categories: ['Mobile', 'Web Development', 'Augmented Reality']
+        },
+        {
+            id: 3,
+            title: 'ReadBooks | Online Book Reading Application',
+            description: 'ReadBooks is an online book reading application that provides a modern, safe, and practical reading experience. This application is developed using Laravel 11 with a flexible authentication system, which allows users to log in manually or use a Google account. Then for the security system, it has been integrated using AES-256 and supports payment systems using E-Wallet and M-Banking.',
+            image: '/image/Readbooks.png',
+            categories: ['Web Development']
+        },
+        {
+            id: 4,
+            title: 'MiraiPlay | Anime Streaming Application',
+            description: 'MiraiPlay is a React.js-based anime streaming app that displays the latest anime list in real-time through external API integration. With a user-friendly interface and clean design, users can explore, view details, and watch anime easily. Fast performance and navigation make MiraiPlay a practical solution for anime fans to enjoy their favorite shows online.',
+            image: '/image/Readbooks.png',
+            categories: ['Web Development']
+        }
+    ];
+
     // Experience
     const experiences = [
         {
@@ -196,7 +189,7 @@ const Portfolio = () => {
             position: 'Freelance Fullstack Web Developer',
             company: 'Self-Employed',
             year: '2020 - Now',
-            description: 'As a Freelance Fullstack Developer, I have experience in developing and managing web-based projects using PHP Native and Laravel. Skilled in building responsive and user-friendly interfaces with Bootstrap and Tailwind CSS. Additionally, I specialize in API integration and payment gateway implementation. Website security is a top priority, ensuring that best practices are applied to protect user data and system integrity.'
+            description: 'As a Freelance Fullstack Developer, I have experience in developing and managing web-based projects using PHP Native, Javascript and Laravel. Skilled in building responsive and user-friendly interfaces with Bootstrap and Tailwind CSS. Additionally, I specialize in API integration, OAuth and payment gateway implementation. Website security is a top priority, ensuring that best practices are applied to protect user data and system integrity.'
         },
         {
             id: 2,
@@ -412,7 +405,7 @@ const Portfolio = () => {
                                 }}>
                                 <div className="relative w-full h-80 md:h-96 overflow-hidden rounded-lg shadow-xl">
                                     <div className="absolute inset-0 bg-gradient-to-tr from-blue-500 to-purple-600 opacity-80"></div>
-                                    <img src="https://via.placeholder.com/400x320" alt="" className="w-full h-full object-cover mix-blend-overlay"/>
+                                        {/* <img src="#" alt="" className="w-full h-full object-cover mix-blend-overlay"/> */}
                                     <div className="absolute inset-0 border-2 border-white border-opacity-20 rounded-lg"></div>
                                 </div>
                             </div>
@@ -437,7 +430,7 @@ const Portfolio = () => {
                                     <div>
                                         <h4 className="text-lg font-semibold text-blue-400 mb-2">Skills</h4>
                                         <ul className="space-y-1 text-gray-400">
-                                            <li>Laravel, Javascript, C#, C React(Basic) & Go(Basic)</li>
+                                            <li>Laravel, Javascript, C#, C, React & Go(Basic)</li>
                                             <li>HTML, CSS, Tailwinds, Bootstrap</li>
                                             <li>Penetration Testing</li>
                                             <li>UI/UX Design</li>
@@ -510,38 +503,66 @@ const Portfolio = () => {
                     </div>
                 </section>
                 
-                {/* Project Section */}       
+                {/* Project Section */}                  
                 <section id="project" className="min-h-screen py-20 px-4 bg-gray-900 bg-opacity-50">
                     <div className="max-w-6xl mx-auto">
                         <div className="mb-16 text-center">
-                            <h2 className="text-4xl font-bold mb-2 inline-block bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">Project</h2>
+                            <h2 className="text-4xl font-bold mb-2 inline-block bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-600">
+                                Project
+                            </h2>
                             <div className="w-20 h-1 bg-blue-500 mx-auto"></div>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div className='bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700 hover:border-blue-500 transition-all duration-500 transform hover:-translate-y-2' data-aos="fade-up-left" data-aos-duration="1000">
-                                <h4 className="text-gray-300 font-bold mb-4">Si-Tepat : Sistem Tempat Sampah Cermat Integrated with IoT and Computer Vision</h4>
-                                <p className="text-gray-400 text-justify mb-5">
-                                    Si-Tepat: Sistem Tempat Sampah Cermat Integrated with IoT and Computer Vision for Waste Classification in Efforts to Realize Zero Waste 2030.</p>
-                                <a className='px-8 py-3 bg-transparent border border-blue-400 text-blue-400 hover:text-white hover:bg-blue-500 rounded-full transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1' href="#">Detail</a>
-                            </div>
-                            <div className='bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700 hover:border-blue-500 transition-all duration-500 transform hover:-translate-y-2' data-aos="fade-up-left" data-aos-duration="1000">
-                                <h4 className="text-gray-300 font-bold mb-4">DigestiveSystem | Learning Application about Human Organs for Elementary School Children Using Augmented Reality</h4>
-                                <p className="text-gray-400 text-justify mb-5">DigestiveSystem is an Augmented Reality (AR) based application that helps elementary school children learn about human digestive organs interactively.</p>
-                                <a className='px-8 py-3 bg-transparent border border-blue-400 text-blue-400 hover:text-white hover:bg-blue-500 rounded-full transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1' href="#">Detail</a>
-                            </div>
-                            <div className='bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700 hover:border-blue-500 transition-all duration-500 transform hover:-translate-y-2' data-aos="fade-up-left" data-aos-duration="1000">
-                                <h4 className="text-gray-300 font-bold mb-4">ReadBooks | Online Book Reading Application</h4>
-                                <p className="text-gray-400 text-justify mb-5">ReadBooks is an online book reading application that provides a modern, safe and practical reading experience. This application was developed using Laravel 11 with a flexible authentication system, allowing users to log in manually or using a Google account.</p>
-                                <a className='px-8 py-3 bg-transparent border border-blue-400 text-blue-400 hover:text-white hover:bg-blue-500 rounded-full transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1' href="#">Detail</a>
-                            </div>
-                            <div className='bg-gray-800 rounded-lg p-6 shadow-lg border border-gray-700 hover:border-blue-500 transition-all duration-500 transform hover:-translate-y-2' data-aos="fade-up-left" data-aos-duration="1000">
-                                <h4 className="text-gray-300 font-bold mb-4">MiraiPlay | Anime Streaming Application</h4>
-                                <p className="text-gray-400 text-justify mb-5">MiraiPlay is a React.js-based anime streaming app that displays the latest anime list in real-time through external API integration. With a user-friendly interface and clean design, users can explore, view details, and watch anime easily. Fast performance and navigation make MiraiPlay a practical solution for anime fans to enjoy their favorite shows online.</p>
-                                <a className='px-8 py-3 bg-transparent border border-blue-400 text-blue-400 hover:text-white hover:bg-blue-500 rounded-full transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1' href="#">Detail</a>
-                            </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+                            {projects.map((project, index) => (
+                                <div
+                                    key={project.id}
+                                    className="group bg-gray-800 rounded-lg shadow-lg border border-gray-700 hover:border-blue-500 transition-all duration-500 relative overflow-hidden cursor-pointer"
+                                    style={{
+                                        opacity: scrollY > 1400 + index * 100 ? 1 : 0,
+                                        transform:
+                                        scrollY > 1400 + index * 100 ? 'translateY(0)' : 'translateY(100px)',
+                                    }}
+                                >
+                                <div className="h-48 bg-gray-700 overflow-hidden">
+                                    <img
+                                        src={project.image}
+                                        alt={project.title}
+                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                        onError={(e) => {
+                                            e.target.onerror = null;
+                                            e.target.src = 'https://via.placeholder.com/400x200';
+                                        }}
+                                    />
+                                </div>
+                                <div className="p-4 group-hover:blur-sm transition-all duration-300">
+                                    <div className="flex flex-wrap gap-2 mb-2">
+                                        {project.categories?.map((cat, idx) => (
+                                        <span key={idx} className="inline-block px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full">
+                                            {cat}
+                                        </span>
+                                        ))}
+                                    </div>
+                                    <h3 className="text-xl font-bold text-blue-400">{project.title}</h3>
+                                    <p className="text-gray-400 mt-2 text-justify">{project.description}</p>
+                                </div>
+
+
+                                {/* Detail button saat hover */}
+                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                                    <Link
+                                    to={`/project/${project.id}`}
+                                    className="px-8 py-3 bg-blue-500 text-white hover:bg-blue-600 rounded-full transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1 animate-fadeIn"
+                                    >
+                                    Detail
+                                    </Link>
+                                </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 </section>
+
 
                 {/* Experience Section */}
                 <section id="experience" className="min-h-screen py-20 px-4 bg-gray-900 bg-opacity-50">
@@ -822,6 +843,8 @@ const Portfolio = () => {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
             </svg>
         </button>
+        
+        <SplashCursor />
 
         {/* Add some CSS for animations */}
         <style jsx>{`
