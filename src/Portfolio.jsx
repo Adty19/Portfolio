@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaGithub, FaLinkedin, FaTwitter, FaEnvelope } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-import SplashCursor from './components/SplashCursor';
+// import SplashCursor from './components/SplashCursor';
 
 const Portfolio = () => {
     const [activeSection, setActiveSection] = useState('home');
@@ -844,7 +844,7 @@ const Portfolio = () => {
             </svg>
         </button>
         
-        <SplashCursor />
+        {/* <SplashCursor /> */}
 
         {/* Add some CSS for animations */}
         <style jsx>{`
